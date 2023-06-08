@@ -1,6 +1,4 @@
-"""
-종목조회 기본데이터 만듦
-"""
+#종목조회 기본데이터 만듦
 import requests
 import json
 import time
@@ -128,9 +126,6 @@ def getDays30(iscd):
     }
     sendUrl = url +'/uapi/domestic-stock/v1/quotations/inquire-daily-price'
     res = requests.get(sendUrl, headers=headersDaily, params=params)
-    #print(res)
-    #print(res.headers)
-    #print(res.json())
     output = res.json()['output']
     return output
 
@@ -145,7 +140,6 @@ def getPeriod(iscd, start, end):
         'tr_id':'FHKST03010100',
         'tr_cont':'',
         'custtype':'P',
-        #'mac_address':macAddress
 
         }
     params = {
@@ -158,9 +152,6 @@ def getPeriod(iscd, start, end):
     }
     sendUrl = url +'/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice'
     res = requests.get(sendUrl, headers=headersDaily, params=params)
-    #print(res)
-    #print(res.headers)
-    #print(res.json())
     output = res.json()['output2']
 
     return output
@@ -168,12 +159,8 @@ def getPeriod(iscd, start, end):
 # HashKey
 def getHashKey(datas):
     sendUrl = url + '/uapi/hashkey'
-    #print(sendUrl)
     res = requests.post(sendUrl, headers=headers, data=json.dumps(datas))
-    #print(res)
-    #print(res.json()['HASH'])
     hashKey = res.json()['HASH']
-    #print('hashKey', hashKey);
     return hashKey
 
 # 계좌번호조회 ----------------------------------
@@ -188,7 +175,6 @@ def getAcntList(CTX_AREA_FK100, CTX_AREA_NK100):
         'tr_cont':'',
         'custtype':'P',
         'hashkey': hashKey
-        #'mac_address':macAddress
 
         }
     params = {
@@ -218,43 +204,27 @@ def getStochestic(val, hVal, lVal):
     chart_min_history = []
     #try:
 
-    for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34]:
+    for index in range(35):
         chart_history.append(val[index:index + 5])
         chart_h_history.append(hVal[index:index + 5])
         chart_l_history.append(lVal[index:index + 5])
-        #print(chart_h_history[index])
         chart_max_history.append(np.max(chart_h_history[index]))
         chart_min_history.append(np.min(chart_l_history[index]))
 
 
     # 스토캐스틱 %K (fast %K) = (현재가격-N일중 최저가)/(N일중 최고가-N일중 최저가) ×100
     st_kf_history = []
-    for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-                    26, 27, 28, 29, 30, 31, 32, 33, 34]:
-        # print('***', chart_history[index], chart_min_history[index], chart_max_history[index])
-        # print(index, '***', chart_history[index][0], chart_min_history[index],
-        #      chart_max_history[index], (chart_history[index][0] - chart_min_history[index]) / (
-        #                chart_max_history[index] - chart_min_history[index]) * 100)
+    for index in range(35):
         st_kf_history.append(
             (chart_history[index][0] - chart_min_history[index]) / (
                     chart_max_history[index] - chart_min_history[index]) * 100)
 
-    # print('st_kf_history', st_kf_history)
     # 스토캐스틱 %D (fast %D) = m일 동안 %K 평균 = Slow %K
     st_k_history = []
     st_d_history = []
-    for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-                    26, 27, 28, 29, 30, 31, 32, 33, 34]:
+    for index in range(35):
         st_k_history.append(np.average(st_kf_history[index:index + 3]))
     
-    #print('st_k_history', st_k_history)
-    # slow %D = t일 동안의 slow %K 평균
-    #for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-    #                26, 27, 28, 29, 30, 31, 32, 33, 34]:
-    #    st_d_history.append(np.average(st_k_history[index:index + 15]))
-        # print('st_d_history', st_d_history)
-    #except:
-    #    print("Unexpected error:", sys.exc_info())
     return st_k_history[0]
 
 #######################################################################
@@ -269,10 +239,7 @@ body = {"grant_type":"client_credentials",
 
 sendUrl = url + '/oauth2/tokenP'
 res = requests.post(sendUrl, headers=headers, data=json.dumps(body))
-#print(res)
-#print(res.json())
 accessToken = res.json()['access_token']
-#time.sleep(1)
 
 # 계좌잔고 가져오기
 acntData = getAcntList('','')
@@ -298,7 +265,6 @@ for item in acntJsonOutput1:
         })
 
 print("보유 제외종목##########################")
-#print(jongTemp)
 jongAll = []
 
 for item in jongTarget:
@@ -328,12 +294,9 @@ for index, item in enumerate(jongAll):
     chartLow = []
     chartDate = []
     time.sleep(0.3)
-    #print(str(item['num'])+ ': ' + item['name'])
-    #print(item)
     chartData = getPeriod(item['iscd'], dtStart, dtEnd)
     #chartData = getDays30(item['iscd'])
     for item2 in chartData:
-        #print('>>>',item2)
         chartDate.append(item2['stck_bsop_date'])
         chartValue.append(int(item2['stck_clpr']))
         chartHigh.append(int(item2['stck_hgpr']))
@@ -348,7 +311,6 @@ for index, item in enumerate(jongAll):
     bfChartValue = chartValue[1::]
     bfChartHigh = chartHigh[1::]
     bfChartLow = chartLow[1::]
-    #print ('test', chartValue, bfChartValue)
     item['st'] = int(getStochestic(chartValue, chartHigh, chartLow) * 1000)/1000
     item['stBf'] = int(getStochestic(bfChartValue, bfChartHigh, bfChartLow) * 1000)/1000
     item['updateDate'] = dtEnd
@@ -356,7 +318,6 @@ for index, item in enumerate(jongAll):
 
 print("일자별데이터, 계좌잔액 정리########################")
 writeFile('baseData' + dtNowStr + '.json', jongAll)
-#print(jongAll)
 
 for index, item in enumerate(jongAll):
     print(item['name'] + ' ' + str(item['st']) + ' ' + str(item['rate']) + ' ' + item['updateDate'])

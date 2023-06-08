@@ -1,6 +1,4 @@
-"""
-볼린져밴드 구하기
-"""
+#볼린져밴드 구하기
 import requests
 import json
 import time
@@ -27,9 +25,7 @@ chartInfo60m = [{'price':61800, 'high':62300, 'low':61100},
     {'price':58100, 'high':58400, 'low':57900},
     {'price':57900, 'high':58100, 'low':57700},
     {'price':58100, 'high':58400, 'low':57700}]
-"""
-볼린져밴드 20,2 일경우 
-"""
+#볼린져밴드 20,2 일경우 
 price = []
 chart60m =[]
 new60m = []
@@ -40,4 +36,4 @@ avg = np.mean(chart60m)
 pyuncha = np.std(chart60m)
 bldown20 = avg - pyuncha * 2.0
 blup20 = avg + pyuncha * 2.0
-print ('CENTER:', avg, '  DOWN:', bldown20, '  UP:', blup20)
+print 'CENTER:', avg, '  DOWN:', bldown20, '  UP:', blup20)
